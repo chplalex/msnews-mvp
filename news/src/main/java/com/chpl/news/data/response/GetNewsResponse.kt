@@ -27,7 +27,7 @@ internal data class PaginationRaw(
 
 internal data class ArticleRaw(
     @SerializedName("author")
-    val author: String = "",
+    val author: String? = null,
     @SerializedName("title")
     val title: String = "",
     @SerializedName("description")
@@ -37,7 +37,7 @@ internal data class ArticleRaw(
     @SerializedName("source")
     val source: String = "",
     @SerializedName("image")
-    val image: String = "",
+    val image: String? = null,
     @SerializedName("category")
     val category: CategoryType?,
     @SerializedName("language")

@@ -13,12 +13,12 @@ internal class NewsMapper
 
     fun mapArticle(articleRaw: ArticleRaw): Article {
         return Article(
-        author = articleRaw.author,
+        author = articleRaw.author ?: "",
         title = articleRaw.title,
         description = articleRaw.description,
         articleUrl = articleRaw.url,
         source = articleRaw.source,
-        imageUrl = articleRaw.image,
+        imageUrl = articleRaw.image ?: "",
         category = articleRaw.category,
         language = articleRaw.language,
         country = articleRaw.country,

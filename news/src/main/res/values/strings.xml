@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">News</string>
+    <string name="news_activity_button_text_favorites">Favorites articles</string>
+    <string name="news_activity_button_text_news">News articles</string>
 </resources>
