@@ -1,0 +1,59 @@
+def libs = [:]
+
+def androidx = [:]
+androidx.appCompat = 'androidx.appcompat:appcompat:1.4.1'
+androidx.constraintLayout = 'androidx.constraintlayout:constraintlayout:2.1.3'
+androidx.coreKtx = 'androidx.core:core-ktx:1.7.0'
+androidx.material = 'com.google.android.material:material:1.5.0'
+
+def dagger = [:]
+dagger.runtime = 'com.google.dagger:dagger:2.40'
+dagger.android = 'com.google.dagger:dagger-android:2.40'
+dagger.androidSupport = 'com.google.dagger:dagger-android-support:2.28.3'
+dagger.compiler = 'com.google.dagger:dagger-compiler:2.38'
+
+def moxy = [:]
+moxy.runtime = 'com.arello-mobile:moxy:1.5.5'
+moxy.android = 'com.arello-mobile:moxy-android:1.5.5'
+moxy.compiler = 'com.arello-mobile:moxy-compiler:1.5.5'
+
+def rxjava = [:]
+rxjava.runtime = 'io.reactivex.rxjava3:rxjava:3.1.0'
+rxjava.android = 'io.reactivex.rxjava3:rxandroid:3.0.0'
+
+def test = [:]
+test.junit = 'junit:junit:4.13.2'
+test.espressoCore = 'androidx.test.espresso:espresso-core:3.4.0'
+test.androidJunit = 'androidx.test.ext:junit:1.1.3'
+
+libs.timber = 'com.jakewharton.timber:timber:5.0.1'
+
+dependencies {
+
+    implementation(libs.androidx.appCompat)
+    implementation(libConstraintLayout)
+    implementation(libCoreKtx)
+    implementation(libMaterial)
+    //dagger
+    implementation(libDagger)
+    implementation(libDaggerAndroid)
+    implementation(libDaggerAndroidSupport)
+    kapt(libDaggerCompiler)
+    // moxy
+    implementation(libMoxy)
+    implementation(libMoxyAndroid)
+    kapt(libMoxyCompiler)
+    // rxjava
+    implementation(libRxAndroid)
+    implementation(libRxJava)
+    // timber
+    implementation(libTimber)
+    // tests
+    testImplementation(libTestJunit)
+    androidTestImplementation(libEspressoCore)
+    androidTestImplementation(libAndroidJunit)
+
+    implementation(
+            project(':router')
+    )
+}

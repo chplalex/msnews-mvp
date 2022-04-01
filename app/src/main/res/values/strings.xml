@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MS News</string>
+
+    <string name="label_keywords">Keywords</string>
+    <string name="label_categories">Categories</string>
+    <string name="label_countries">Countries</string>
+    <string name="label_search_button">Get news</string>
+
+    <string name="chip_business">business</string>
+    <string name="chip_entertainment">entertainment</string>
+    <string name="chip_health">health</string>
+    <string name="chip_science">science</string>
+    <string name="chip_sports">sports</string>
+    <string name="chip_technology">technology</string>
+</resources>
