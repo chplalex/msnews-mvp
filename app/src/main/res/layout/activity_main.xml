@@ -42,18 +42,34 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/activity_main_categories"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/label_categories" />
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/label_categories" />
+
+                <ImageView
+                    android:id="@+id/activity_main_categories_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_expand"/>
+
+            </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/activity_main_categories_chip_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="false" />
+                app:singleSelection="false"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -67,17 +83,33 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/activity_main_countries"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/label_countries" />
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/label_countries" />
+
+                <ImageView
+                    android:id="@+id/activity_main_countries_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_expand"/>
+
+            </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/activity_main_countries_chip_group"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
         </LinearLayout>
 
