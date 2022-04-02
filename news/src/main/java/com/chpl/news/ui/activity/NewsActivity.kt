@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.chpl.news.R
 import com.chpl.news.di.DaggerNewsComponent
 import com.chpl.news.domain.model.Article
+import com.chpl.news.ui.item.NewsItemUiModel
 import moxy.MvpActivity
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -38,7 +39,7 @@ class NewsActivity : MvpActivity(), NewsView {
     private lateinit var progress: View
     private lateinit var recyclerView: RecyclerView
     private lateinit var button: Button
-    private val recyclerAdapter = NewsAdapter()
+    private val recyclerAdapter by lazy { NewsAdapter(presenter) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DaggerNewsComponent.factory().createComponent().inject(this)
@@ -58,14 +59,18 @@ class NewsActivity : MvpActivity(), NewsView {
         }
     }
 
-    override fun showFavoritesArticles(articles: List<Article>) {
-        recyclerAdapter.update(articles)
+    override fun showFavoritesNewsItems(newsItems: List<NewsItemUiModel>) {
+        recyclerAdapter.update(newsItems)
         button.text = getString(R.string.news_activity_button_text_news)
     }
 
-    override fun showNewsArticles(articles: List<Article>) {
-        recyclerAdapter.update(articles)
+    override fun showNewsItems(newsItems: List<NewsItemUiModel>) {
+        recyclerAdapter.update(newsItems)
         button.text = getString(R.string.news_activity_button_text_favorites)
+    }
+
+    override fun updateNewsItem(position: Int) {
+        recyclerAdapter.notifyItemChanged(position)
     }
 
     override fun hideProgress() {

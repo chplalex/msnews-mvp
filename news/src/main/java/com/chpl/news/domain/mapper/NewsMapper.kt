@@ -2,16 +2,17 @@ package com.chpl.news.domain.mapper
 
 import com.chpl.news.data.response.ArticleRaw
 import com.chpl.news.domain.model.Article
+import com.chpl.news.ui.item.NewsItemUiModel
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-internal class NewsMapper
+class NewsMapper
 @Inject constructor() {
 
-    fun mapArticle(articleRaw: ArticleRaw): Article {
+    internal fun mapToArticle(articleRaw: ArticleRaw): Article {
         return Article(
         author = articleRaw.author ?: "",
         title = articleRaw.title,
@@ -26,11 +27,22 @@ internal class NewsMapper
         )
     }
 
+    internal fun mapToNewsItemUiModel(article: Article, isFavoriteOn: Boolean): NewsItemUiModel {
+        return NewsItemUiModel(
+            id = article.hashCode(),
+            title = article.title,
+            author = article.author,
+            description = article.description,
+            imageUrl = article.imageUrl,
+            isFavorite = isFavoriteOn
+        )
+    }
+
     private fun mapDate(date: String): Date? {
         return try {
             SimpleDateFormat("yyyy-MM-ddTHH:mm:ssXXXXXX", Locale.US).parse(date)
         } catch (e: Throwable) {
-            Timber.d("Date parsing error, unknown date format: $date")
+            Timber.e("Date parsing error, unknown date format: $date")
             null
         }
     }

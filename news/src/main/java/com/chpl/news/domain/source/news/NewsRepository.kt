@@ -1,4 +1,4 @@
-package com.chpl.news.domain.source
+package com.chpl.news.domain.source.news
 
 import com.chpl.news.data.response.GetNewsResponse
 import io.reactivex.rxjava3.core.Single

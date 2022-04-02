@@ -1,4 +1,4 @@
-package com.chpl.news.domain.source
+package com.chpl.news.domain.source.news
 
 import com.chpl.news.domain.mapper.NewsMapper
 import com.chpl.news.domain.model.Article
@@ -14,6 +14,6 @@ internal class NewsInteractor
     override fun getNews(keywords: String?, categories: String?, countries: String?): Single<List<Article>> {
         return newsRepository.getNews(keywords = keywords, categories = categories, countries = countries)
             .doOnSuccess { response -> response.error?.let { throw Exception(it.message) } }
-            .map { response -> response.data?.map { newsMapper.mapArticle(it) } ?: emptyList() }
+            .map { response -> response.data?.map { newsMapper.mapToArticle(it) } ?: emptyList() }
     }
 }
