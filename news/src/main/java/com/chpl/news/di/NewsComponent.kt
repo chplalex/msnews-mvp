@@ -1,6 +1,6 @@
 package com.chpl.news.di
 
-import com.chpl.news.ui.NewsActivity
+import com.chpl.news.ui.activity.NewsActivity
 import dagger.Component
 import javax.inject.Singleton
 

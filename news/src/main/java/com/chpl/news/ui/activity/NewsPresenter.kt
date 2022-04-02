@@ -1,4 +1,4 @@
-package com.chpl.news.ui
+package com.chpl.news.ui.activity
 
 import com.chpl.base.ui.BasePresenter
 import com.chpl.news.domain.source.NewsUseCase

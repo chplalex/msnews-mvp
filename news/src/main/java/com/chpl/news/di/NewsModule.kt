@@ -6,7 +6,7 @@ import com.chpl.news.domain.source.NewsInteractor
 import com.chpl.news.domain.source.NewsRepository
 import com.chpl.news.domain.source.NewsRepositoryImpl
 import com.chpl.news.domain.source.NewsUseCase
-import com.chpl.news.ui.NewsPresenter
+import com.chpl.news.ui.activity.NewsPresenter
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

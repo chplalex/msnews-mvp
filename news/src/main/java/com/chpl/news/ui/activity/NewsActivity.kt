@@ -1,11 +1,10 @@
-package com.chpl.news.ui
+package com.chpl.news.ui.activity
 
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Button
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chpl.news.R

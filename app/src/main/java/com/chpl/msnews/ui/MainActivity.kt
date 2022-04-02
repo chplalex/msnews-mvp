@@ -10,10 +10,10 @@ import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import com.chpl.msnews.App
 import com.chpl.msnews.R
-import com.chpl.news.ui.NewsActivity
-import com.chpl.news.ui.PARAM_KEY_CATEGORIES
-import com.chpl.news.ui.PARAM_KEY_COUNTRIES
-import com.chpl.news.ui.PARAM_KEY_KEYWORDS
+import com.chpl.news.ui.activity.NewsActivity
+import com.chpl.news.ui.activity.PARAM_KEY_CATEGORIES
+import com.chpl.news.ui.activity.PARAM_KEY_COUNTRIES
+import com.chpl.news.ui.activity.PARAM_KEY_KEYWORDS
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputEditText
