@@ -21,6 +21,8 @@ class MainPresenter
     private var keywords = ""
     private val countries = setOf<String>()
     private val categories = setOf<String>()
+    private var isCategoriesCollapsed = true
+    private var isCountriesCollapsed = true
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -81,5 +83,21 @@ class MainPresenter
         val paramCategories = countries.joinToString().ifEmpty { null }
         val paramCountries = categories.joinToString().ifEmpty { null }
         viewState.openNewsScreen(paramKeywords, paramCategories, paramCountries)
+    }
+
+    fun onCategoriesClicked() {
+        if (isCategoriesCollapsed)
+            viewState.expandCategories()
+        else
+            viewState.collapseCategories()
+        isCategoriesCollapsed = !isCategoriesCollapsed
+    }
+
+    fun onCountriesClicked() {
+        if (isCountriesCollapsed)
+            viewState.expandCountries()
+        else
+            viewState.collapseCountries()
+        isCountriesCollapsed = !isCountriesCollapsed
     }
 }

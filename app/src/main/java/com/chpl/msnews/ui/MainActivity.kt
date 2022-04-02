@@ -3,6 +3,10 @@ package com.chpl.msnews.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.Button
+import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
 import com.chpl.msnews.App
 import com.chpl.msnews.R
@@ -29,23 +33,40 @@ class MainActivity : MvpActivity(), MainView {
     @InjectPresenter
     lateinit var presenter: MainPresenter
 
+    lateinit var searchButton: Button
+    lateinit var countriesIcon: ImageView
+    lateinit var categoriesIcon: ImageView
+    lateinit var countriesChipGroup: ChipGroup
+    lateinit var categoriesChipGroup: ChipGroup
+
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as App).appComponent.inject(activity = this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setKeywordsInput()
-        setSearchButton()
+        findViews()
+        initListeners()
     }
 
-    private fun setKeywordsInput() {
+    private fun findViews() {
+        searchButton = findViewById(R.id.activity_main_search_button)
+        countriesIcon = findViewById(R.id.activity_main_countries_icon)
+        categoriesIcon = findViewById(R.id.activity_main_categories_icon)
+        countriesChipGroup = findViewById(R.id.activity_main_countries_chip_group)
+        categoriesChipGroup = findViewById(R.id.activity_main_categories_chip_group)
+    }
+
+    private fun initListeners() {
+        findViewById<View>(R.id.activity_main_categories).setOnClickListener {
+            presenter.onCategoriesClicked()
+        }
+        findViewById<View>(R.id.activity_main_countries).setOnClickListener {
+            presenter.onCountriesClicked()
+        }
         findViewById<TextInputEditText>(R.id.activity_main_keywords).addTextChangedListener {
             presenter.onKeywordsChanged(it.toString())
         }
-    }
-
-    private fun setSearchButton() {
-        findViewById<View>(R.id.activity_main_search_button).setOnClickListener {
+        searchButton.setOnClickListener {
             presenter.onSearchButtonClicked()
         }
     }
@@ -83,5 +104,25 @@ class MainActivity : MvpActivity(), MainView {
             putExtra(PARAM_KEY_COUNTRIES, countries)
         }
         startActivity(intent)
+    }
+
+    override fun expandCategories() {
+        categoriesChipGroup.visibility = VISIBLE
+        categoriesIcon.setImageResource(R.drawable.ic_collaps)
+    }
+
+    override fun collapseCategories() {
+        categoriesChipGroup.visibility = GONE
+        categoriesIcon.setImageResource(R.drawable.ic_expand)
+    }
+
+    override fun expandCountries() {
+        countriesChipGroup.visibility = VISIBLE
+        countriesIcon.setImageResource(R.drawable.ic_collaps)
+    }
+
+    override fun collapseCountries() {
+        countriesChipGroup.visibility = GONE
+        countriesIcon.setImageResource(R.drawable.ic_expand)
     }
 }

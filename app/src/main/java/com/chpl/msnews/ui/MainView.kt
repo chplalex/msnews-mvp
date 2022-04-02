@@ -12,4 +12,12 @@ interface MainView: MvpView {
     fun setCountries(countries: List<String>)
 
     fun openNewsScreen(keywords: String?, categories: String?, countries: String?)
+
+    fun expandCategories()
+
+    fun collapseCategories()
+
+    fun expandCountries()
+
+    fun collapseCountries()
 }
