@@ -4,10 +4,7 @@ import com.chpl.base.ui.BasePresenter
 import com.chpl.msnews.domain.CategoriesUseCase
 import com.chpl.msnews.domain.CountriesUseCase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import moxy.InjectViewState
-import moxy.MvpPresenter
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -81,7 +78,7 @@ class MainPresenter
     fun onSearchButtonClicked() {
         val paramKeywords = keywords.ifEmpty { null }
         val paramCategories = categories.joinToString().ifEmpty { null }
-        val paramCountries = countries.joinToString().ifEmpty { null }
+        val paramCountries = countries.joinToString { countriesUseCase.getCountryCode(it) }.ifEmpty { null }
         viewState.openNewsScreen(paramKeywords, paramCategories, paramCountries)
     }
 
