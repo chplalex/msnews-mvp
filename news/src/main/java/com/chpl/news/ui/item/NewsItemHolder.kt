@@ -7,12 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chpl.news.R
-import com.chpl.news.ui.activity.NewsPresenter
+import com.chpl.news.domain.source.favorites.FavoriteState
 
-internal class NewsItemHolder(
-    itemView: View,
-    private val presenter: NewsPresenter
-) : RecyclerView.ViewHolder(itemView) {
+internal class NewsItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val title = itemView.findViewById<TextView>(R.id.article_item_view_title)
     private val author = itemView.findViewById<TextView>(R.id.article_item_view_author)
@@ -34,8 +31,12 @@ internal class NewsItemHolder(
             .apply(requestImageOptions)
             .into(image)
 
-        val resId = if (itemUiModel.isFavorite) R.drawable.ic_favorite_on else R.drawable.ic_favorite_off
+        val resId = when (itemUiModel.favoriteState) {
+            FavoriteState.ENABLED_AND_ON -> R.drawable.ic_favorite_on
+            FavoriteState.ENABLED_AND_OFF -> R.drawable.ic_favorite_off
+            FavoriteState.DISABLED -> R.drawable.ic_favorite_disabled
+        }
         favoriteIcon.setImageResource(resId)
-        favoriteIcon.setOnClickListener { presenter.onFavoriteIconClicked(itemUiModel.id) }
+        favoriteIcon.setOnClickListener { itemUiModel.onFavoriteAction?.invoke(itemUiModel.id) }
     }
 }

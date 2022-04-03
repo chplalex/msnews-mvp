@@ -13,11 +13,11 @@ internal class FavoritesInteractor
         return favoritesRepository.getFavorites()
     }
 
-    override fun getFavoriteStatus(article: Article): Single<Boolean> {
-        return favoritesRepository.getFavoriteStatus(article)
+    override fun getFavoriteState(article: Article): Single<FavoriteState> {
+        return favoritesRepository.getFavoriteState(article)
     }
 
-    override fun switchFavoriteStatus(article: Article): Single<Boolean> {
-        return favoritesRepository.switchFavoriteStatus(article)
+    override fun switchFavoriteState(article: Article): Single<FavoriteState> {
+        return favoritesRepository.switchFavoriteState(article)
     }
 }

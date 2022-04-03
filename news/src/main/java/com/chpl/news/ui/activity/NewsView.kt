@@ -17,4 +17,8 @@ interface NewsView : MvpView {
     fun showFavoritesNewsItems(newsItems: List<NewsItemUiModel>)
 
     fun updateNewsItem(position: Int)
+
+    fun removeNewsItem(position: Int)
+
+    fun showError(it: Throwable)
 }

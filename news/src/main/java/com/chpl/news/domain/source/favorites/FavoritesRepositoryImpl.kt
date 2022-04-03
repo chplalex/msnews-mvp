@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 internal class FavoritesRepositoryImpl
-    @Inject constructor(): FavoritesRepository {
+@Inject constructor() : FavoritesRepository {
 
     private val favorites = mutableListOf<Article>()
 
@@ -13,18 +13,23 @@ internal class FavoritesRepositoryImpl
         return Single.just(favorites)
     }
 
-    override fun getFavoriteStatus(article: Article): Single<Boolean> {
-        val isFavorite = favorites.find { it == article } != null
-        return Single.just(isFavorite)
+    override fun getFavoriteState(article: Article): Single<FavoriteState> {
+        val item = favorites.find { it == article }
+        val state = if (item == null) FavoriteState.ENABLED_AND_OFF else FavoriteState.ENABLED_AND_ON
+        return Single.just(state)
     }
 
-    override fun switchFavoriteStatus(article: Article): Single<Boolean> {
-        val favoriteArticle = favorites.find { it == article }
-        val isFavorite = favoriteArticle != null
-        if (isFavorite)
+    override fun switchFavoriteState(article: Article): Single<FavoriteState> {
+        val isFavorite = favorites.find { it == article } != null
+        val state = if (isFavorite) {
+            // TODO здесь удаляем запись из БД и только в случае успеха удаляем из коллекции
             favorites.remove(article)
-        else
+            FavoriteState.ENABLED_AND_OFF
+        } else {
+            // TODO здесь добавляем запись в БД и только в случае успеха добавляем в коллекцию
             favorites.add(article)
-        return Single.just(!isFavorite)
+            FavoriteState.ENABLED_AND_ON
+        }
+        return Single.just(state)
     }
 }

@@ -3,6 +3,7 @@ package com.chpl.news.ui.activity
 import com.chpl.base.ui.BasePresenter
 import com.chpl.news.domain.mapper.NewsMapper
 import com.chpl.news.domain.model.Article
+import com.chpl.news.domain.source.favorites.FavoriteState
 import com.chpl.news.domain.source.favorites.FavoritesUseCase
 import com.chpl.news.domain.source.news.NewsUseCase
 import com.chpl.news.ui.item.NewsItemUiModel
@@ -25,14 +26,14 @@ class NewsPresenter
     private var keywords: String? = null
     private var categories: String? = null
     private var countries: String? = null
-    private var articlesSource: ArticlesSourceType = ArticlesSourceType.FAVORITES
+    private var articlesSource: ArticlesSourceType = ArticlesSourceType.NEWS
 
-    private val favoriteStatusSubject = PublishSubject.create<Int>()
-    private val favoritesLoadSubject = PublishSubject.create<Unit>()
-    private val newsLoadSubject = PublishSubject.create<Unit>()
+    private val loadFavoritesSubject = PublishSubject.create<Unit>()
+    private val loadNewsSubject = PublishSubject.create<Unit>()
+    private val switchFavoriteStateSubject = PublishSubject.create<Int>()
 
     private var articles = emptyList<Article>()
-    private var newsItemUiModels = emptyList<NewsItemUiModel>()
+    private var uiModels = mutableListOf<NewsItemUiModel>()
 
     private enum class ArticlesSourceType {
         FAVORITES,
@@ -47,15 +48,15 @@ class NewsPresenter
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        observeFavoriteStatusSubject()
-        observeFavoritesLoadSubject()
-        observeNewsLoadSubject()
+        observeLoadFavorites()
+        observeLoadNews()
+        observeFavoriteState()
         loadNews()
     }
 
-    private fun observeFavoriteStatusSubject() {
+    private fun observeFavoriteState() {
         unsubscribeOnDestroy(
-            favoriteStatusSubject
+            switchFavoriteStateSubject
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
@@ -65,26 +66,38 @@ class NewsPresenter
                 .switchMapSingle { itemId ->
                     val article = articles.find { it.hashCode() == itemId }
                         ?: throw IllegalArgumentException("Item with hashCode == $itemId not found")
-                    favoritesUseCase.switchFavoriteStatus(article).map { isFavorite -> article to isFavorite }
+                    val position = articles.indexOf(article)
+                    favoritesUseCase.switchFavoriteState(article).map { newState -> position to newState }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { viewState.hideProgress() }
                 .subscribe({ pair ->
-                    val uiModel = newsItemUiModels.find { uiModel -> uiModel.id == pair.first.hashCode() }
-                        ?: throw IllegalArgumentException("Item with hashCode == ${pair.first.hashCode()} not found")
-                    uiModel.isFavorite = pair.second
-                    val position = newsItemUiModels.indexOf(uiModel)
-                    viewState.updateNewsItem(position)
+                    viewState.hideProgress()
+                    handleFavoriteState(pair.first, pair.second)
                 }, {
+                    viewState.hideProgress()
+                    viewState.showError(it)
                     Timber.e(it)
                 })
 
         )
     }
 
-    private fun observeFavoritesLoadSubject() {
+    private fun handleFavoriteState(position: Int, newState: FavoriteState) {
+        when (articlesSource) {
+            ArticlesSourceType.NEWS -> {
+                uiModels[position].favoriteState = newState
+                viewState.updateNewsItem(position)
+            }
+            ArticlesSourceType.FAVORITES -> {
+                uiModels.removeAt(position)
+                viewState.removeNewsItem(position)
+            }
+        }
+    }
+
+    private fun observeLoadFavorites() {
         unsubscribeOnDestroy(
-            favoritesLoadSubject
+            loadFavoritesSubject
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
@@ -93,25 +106,36 @@ class NewsPresenter
                 .observeOn(Schedulers.io())
                 .switchMapSingle {
                     favoritesUseCase.getFavorites().map { articles ->
+                        this.articlesSource = ArticlesSourceType.FAVORITES
                         this.articles = articles
-                        articles.map { article -> newsMapper.mapToNewsItemUiModel(article, true) }
+                        articles.map { article ->
+                            newsMapper.mapToNewsItemUiModel(
+                                article = article,
+                                favoriteState = FavoriteState.ENABLED_AND_ON,
+                                onFavoriteAction = { switchFavoriteState(article.hashCode()) }
+                            )
+                        }
                     }
                 }
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
-                    viewState.hideProgress()
+                    uiModels.clear()
+                    uiModels.addAll(it)
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    viewState.showNewsItems(it)
+                    viewState.hideProgress()
+                    viewState.showFavoritesNewsItems(uiModels)
                 }, {
+                    viewState.hideProgress()
+                    viewState.showError(it)
                     Timber.e(it)
                 })
         )
     }
 
-    private fun observeNewsLoadSubject() {
+    private fun observeLoadNews() {
         unsubscribeOnDestroy(
-            newsLoadSubject
+            loadNewsSubject
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
@@ -121,40 +145,64 @@ class NewsPresenter
                 .switchMapSingle {
                     newsUseCase.getNews(keywords = keywords, categories = categories, countries = countries)
                         .map { articles ->
+                            this.articlesSource = ArticlesSourceType.NEWS
                             this.articles = articles
-                            articles.map { article -> newsMapper.mapToNewsItemUiModel(article, false) }
+                            articles.map { article ->
+                                val state = when (articlesSource) {
+                                    ArticlesSourceType.NEWS -> FavoriteState.ENABLED_AND_OFF
+                                    ArticlesSourceType.FAVORITES -> FavoriteState.ENABLED_AND_ON
+                                }
+                                val onFavoriteAction = mapToFavoriteAction(state)
+                                newsMapper.mapToNewsItemUiModel(
+                                    article = article,
+                                    favoriteState = state,
+                                    onFavoriteAction = { onFavoriteAction(article.hashCode()) }
+                                )
+                            }
                         }
                 }
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
-                    viewState.hideProgress()
+                    uiModels.clear()
+                    uiModels.addAll(it)
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    viewState.showNewsItems(it)
-                    newsItemUiModels = it
+                    viewState.hideProgress()
+                    viewState.showNewsItems(uiModels)
                 }, {
+                    viewState.hideProgress()
+                    viewState.showError(it)
                     Timber.e(it)
                 })
 
         )
     }
 
-    fun onButtonClicked() {
-        articlesSource = when (articlesSource) {
-            ArticlesSourceType.FAVORITES -> {
-                loadFavorites()
-                ArticlesSourceType.NEWS
-            }
-            ArticlesSourceType.NEWS -> {
-                loadNews()
-                ArticlesSourceType.FAVORITES
+    private fun mapToFavoriteAction(favoriteState: FavoriteState): ((Int) -> Unit) {
+        return when (articlesSource) {
+            ArticlesSourceType.FAVORITES -> ::switchFavoriteState
+            ArticlesSourceType.NEWS -> when (favoriteState) {
+                FavoriteState.ENABLED_AND_ON,
+                FavoriteState.ENABLED_AND_OFF -> ::switchFavoriteState
+                FavoriteState.DISABLED -> ::authUser
             }
         }
     }
 
-    fun onFavoriteIconClicked(itemId: Int) = favoriteStatusSubject.onNext(itemId)
+    fun onButtonClicked() {
+        when (articlesSource) {
+            ArticlesSourceType.FAVORITES -> loadNews()
+            ArticlesSourceType.NEWS -> loadFavorites()
+        }
+    }
 
-    private fun loadNews() = newsLoadSubject.onNext(Unit)
+    private fun authUser(itemId: Int) {
+        // nothing
+    }
 
-    private fun loadFavorites() = favoritesLoadSubject.onNext(Unit)
+    private fun loadFavorites() = loadFavoritesSubject.onNext(Unit)
+
+    private fun loadNews() = loadNewsSubject.onNext(Unit)
+
+    private fun switchFavoriteState(itemId: Int) = switchFavoriteStateSubject.onNext(itemId)
 }

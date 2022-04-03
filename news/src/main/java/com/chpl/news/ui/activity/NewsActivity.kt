@@ -1,5 +1,6 @@
 package com.chpl.news.ui.activity
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -9,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chpl.news.R
 import com.chpl.news.di.DaggerNewsComponent
-import com.chpl.news.domain.model.Article
 import com.chpl.news.ui.item.NewsItemUiModel
 import moxy.MvpActivity
 import moxy.presenter.InjectPresenter
@@ -39,7 +39,8 @@ class NewsActivity : MvpActivity(), NewsView {
     private lateinit var progress: View
     private lateinit var recyclerView: RecyclerView
     private lateinit var button: Button
-    private val recyclerAdapter by lazy { NewsAdapter(presenter) }
+
+    private val recyclerAdapter = NewsAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DaggerNewsComponent.factory().createComponent().inject(this)
@@ -71,6 +72,21 @@ class NewsActivity : MvpActivity(), NewsView {
 
     override fun updateNewsItem(position: Int) {
         recyclerAdapter.notifyItemChanged(position)
+    }
+
+    override fun removeNewsItem(position: Int) {
+        recyclerAdapter.notifyItemRemoved(position)
+    }
+
+    override fun showError(it: Throwable) {
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle(R.string.news_activity_error_dialog_title)
+            setMessage(it.message)
+            setPositiveButton(R.string.news_activity_error_dialog_pos_button,null)
+        }
+        builder
+            .create()
+            .show()
     }
 
     override fun hideProgress() {

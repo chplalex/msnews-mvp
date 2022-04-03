@@ -19,8 +19,8 @@ class MainPresenter
 ) : BasePresenter<MainView>() {
 
     private var keywords = ""
-    private val countries = setOf<String>()
-    private val categories = setOf<String>()
+    private val countries = mutableSetOf<String>()
+    private val categories = mutableSetOf<String>()
     private var isCategoriesCollapsed = true
     private var isCountriesCollapsed = true
 
@@ -64,24 +64,24 @@ class MainPresenter
 
     fun onCategoryClicked(category: String, checked: Boolean) {
         if (checked) {
-            categories.plus(category)
+            categories.add(category)
         } else {
-            categories.minus(category)
+            categories.remove(category)
         }
     }
 
     fun onCountryClicked(country: String, checked: Boolean) {
         if (checked) {
-            countries.plus(country)
+            countries.add(country)
         } else {
-            countries.minus(country)
+            countries.remove(country)
         }
     }
 
     fun onSearchButtonClicked() {
-        val paramKeywords = keywords.trim().ifEmpty { null }
-        val paramCategories = countries.joinToString().ifEmpty { null }
-        val paramCountries = categories.joinToString().ifEmpty { null }
+        val paramKeywords = keywords.ifEmpty { null }
+        val paramCategories = categories.joinToString().ifEmpty { null }
+        val paramCountries = countries.joinToString().ifEmpty { null }
         viewState.openNewsScreen(paramKeywords, paramCategories, paramCountries)
     }
 

@@ -76,11 +76,11 @@ class MainActivity : MvpActivity(), MainView {
         categories.forEach {
             val chip = layoutInflater.inflate(R.layout.filter_item, container, false) as Chip
             chip.text = it
+            chip.setOnClickListener { view ->
+                view as Chip
+                presenter.onCategoryClicked(view.text.toString(), view.isChecked)
+            }
             container.addView(chip)
-        }
-        container.setOnCheckedChangeListener { _, checkedId ->
-            val chip = container.findViewById<Chip>(checkedId)
-            presenter.onCategoryClicked(chip.text.toString(), chip.isChecked)
         }
     }
 
@@ -89,11 +89,11 @@ class MainActivity : MvpActivity(), MainView {
         countries.forEach {
             val chip = layoutInflater.inflate(R.layout.filter_item, container, false) as Chip
             chip.text = it
+            chip.setOnClickListener { view ->
+                view as Chip
+                presenter.onCountryClicked(view.text.toString(), view.isChecked)
+            }
             container.addView(chip)
-        }
-        container.setOnCheckedChangeListener { _, checkedId ->
-            val chip = container.findViewById<Chip>(checkedId)
-            presenter.onCountryClicked(chip.text.toString(), chip.isChecked)
         }
     }
 

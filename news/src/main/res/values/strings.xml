@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">News</string>
-    <string name="news_activity_button_text_favorites">Favorites articles</string>
-    <string name="news_activity_button_text_news">News articles</string>
+    <string name="news_activity_button_text_favorites">go to favorites articles</string>
+    <string name="news_activity_button_text_news">go to news articles</string>
+    <string name="news_activity_error_dialog_title">Error occurs</string>
+    <string name="news_activity_error_dialog_pos_button">Clear</string>
 </resources>

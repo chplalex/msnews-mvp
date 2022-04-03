@@ -9,11 +9,16 @@ internal class NewsInteractor
 @Inject constructor(
     private val newsRepository: NewsRepository,
     private val newsMapper: NewsMapper
-): NewsUseCase {
+) : NewsUseCase {
 
     override fun getNews(keywords: String?, categories: String?, countries: String?): Single<List<Article>> {
         return newsRepository.getNews(keywords = keywords, categories = categories, countries = countries)
-            .doOnSuccess { response -> response.error?.let { throw Exception(it.message) } }
+            .doOnSuccess { response ->
+                response.error?.let {
+                    val message = newsMapper.mapNewsError(it)
+                    throw Exception(message)
+                }
+            }
             .map { response -> response.data?.map { newsMapper.mapToArticle(it) } ?: emptyList() }
     }
 }

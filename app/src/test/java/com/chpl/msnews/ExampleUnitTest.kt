@@ -1,5 +1,6 @@
 package com.chpl.msnews
 
+import com.chpl.base.data.CountryType
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,6 +14,5 @@ class ExampleUnitTest {
 
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
     }
 }

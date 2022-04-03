@@ -7,7 +7,7 @@ interface FavoritesUseCase {
 
     fun getFavorites(): Single<List<Article>>
 
-    fun getFavoriteStatus(article: Article): Single<Boolean>
+    fun getFavoriteState(article: Article): Single<FavoriteState>
 
-    fun switchFavoriteStatus(article: Article): Single<Boolean>
+    fun switchFavoriteState(article: Article): Single<FavoriteState>
 }
