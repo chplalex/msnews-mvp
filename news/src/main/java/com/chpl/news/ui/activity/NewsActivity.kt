@@ -39,6 +39,7 @@ class NewsActivity : MvpActivity(), NewsView {
     private lateinit var progress: View
     private lateinit var recyclerView: RecyclerView
     private lateinit var button: Button
+    private lateinit var newsLayout: View
 
     private val recyclerAdapter = NewsAdapter()
 
@@ -49,6 +50,7 @@ class NewsActivity : MvpActivity(), NewsView {
         setContentView(R.layout.activity_news)
 
         progress = findViewById(R.id.news_activity_progress)
+        newsLayout = findViewById(R.id.news_activity_news_layout)
 
         recyclerView = findViewById<RecyclerView?>(R.id.news_activity_recycler_view).apply {
             layoutManager = LinearLayoutManager(context)

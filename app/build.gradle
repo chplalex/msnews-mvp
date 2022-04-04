@@ -6,7 +6,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.chpl.msnews"
+        applicationId "com.chplalex.msnews"
         minSdk 25
         targetSdk 31
         versionCode 1
@@ -40,6 +40,8 @@ dependencies {
     //dagger
     implementation 'com.google.dagger:dagger:2.40'
     kapt 'com.google.dagger:dagger-compiler:2.38'
+    // google play
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
     // moxy
     implementation 'com.github.moxy-community:moxy:2.2.2'
     implementation 'com.github.moxy-community:moxy-android:2.2.2'

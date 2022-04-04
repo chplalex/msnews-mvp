@@ -3,6 +3,7 @@ package com.chpl.msnews.ui
 import com.chpl.base.ui.BasePresenter
 import com.chpl.msnews.domain.CategoriesUseCase
 import com.chpl.msnews.domain.CountriesUseCase
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import moxy.InjectViewState
 import timber.log.Timber
@@ -15,6 +16,7 @@ class MainPresenter
     private val countriesUseCase: CountriesUseCase
 ) : BasePresenter<MainView>() {
 
+    private var signInAccount: GoogleSignInAccount? = null
     private var keywords = ""
     private val countries = mutableSetOf<String>()
     private val categories = mutableSetOf<String>()
@@ -75,7 +77,7 @@ class MainPresenter
         }
     }
 
-    fun onSearchButtonClicked() {
+    fun onSearchClicked() {
         val paramKeywords = keywords.ifEmpty { null }
         val paramCategories = categories.joinToString().ifEmpty { null }
         val paramCountries = countries.joinToString { countriesUseCase.getCountryCode(it) }.ifEmpty { null }
@@ -96,5 +98,23 @@ class MainPresenter
         else
             viewState.collapseCountries()
         isCountriesCollapsed = !isCountriesCollapsed
+    }
+
+    fun onSignInClicked() {
+        if (signInAccount == null) {
+            viewState.signIn()
+        } else {
+            viewState.singOut()
+        }
+    }
+
+    fun onCheckSignInStatus(account: GoogleSignInAccount?) {
+        signInAccount = account
+        if (signInAccount == null) {
+            viewState.showStatusLoggedOut()
+        } else {
+            val name = signInAccount?.displayName ?: signInAccount?.email
+            viewState.showStatusLoggedIn(name)
+        }
     }
 }

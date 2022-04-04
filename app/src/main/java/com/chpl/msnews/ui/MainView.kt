@@ -20,4 +20,14 @@ interface MainView: MvpView {
     fun expandCountries()
 
     fun collapseCountries()
+
+    fun showStatusLoggedOut()
+
+    fun showStatusLoggedIn(name: String?)
+
+    fun signIn()
+
+    fun singOut()
+
+    fun showError(it: Throwable)
 }
