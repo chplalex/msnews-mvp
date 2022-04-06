@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/news_activity_news_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:context="com.chpl.msnews.ui.news.activity.NewsActivity">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/news_activity_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:alpha="0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/news_activity_favorites_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/news_activity_button_text_favorites"
+            tools:visibility="visible"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/news_activity_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/progress_background_color"
+        tools:visibility="gone">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+    </LinearLayout>
+
+</FrameLayout>

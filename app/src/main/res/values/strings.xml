@@ -21,4 +21,11 @@
 
     <string name="activity_main_error_dialog_title">Error occurs</string>
     <string name="activity_main_error_dialog_pos_button">Clear</string>
+
+    <string name="news_activity_button_text_favorites">go to favorites articles</string>
+    <string name="news_activity_button_text_news">go to news articles</string>
+    <string name="news_activity_error_dialog_title">Error occurs</string>
+    <string name="news_activity_error_dialog_pos_button">Clear</string>
+    <string name="article_item_view_image_description">Article item view image</string>
+    <string name="article_item_view_favorite_icon_description">Article item view favorite icon</string>
 </resources>

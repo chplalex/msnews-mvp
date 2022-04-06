@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MSNews">
         <activity
-            android:name=".ui.activity.NewsActivity"
+            android:name="com.chpl.msnews.ui.news.activity.NewsActivity"
             android:exported="true">
         </activity>
     </application>

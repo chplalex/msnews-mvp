@@ -1,7 +1,7 @@
 package com.chpl.msnews.domain
 
-import com.chpl.base.data.CategoryType
-import com.chpl.base.data.CountryType
+import com.chpl.msnews.data.model.CategoryType
+import com.chpl.msnews.data.model.CountryType
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 

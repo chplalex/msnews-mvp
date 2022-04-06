@@ -1,7 +1,6 @@
 package com.chpl.base
 
-import com.chpl.base.data.CategoryType
-import com.chpl.base.data.CountryType
+import com.chpl.msnews.data.model.CategoryType
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -20,7 +19,7 @@ class ExampleUnitTest {
 
     @Test
     fun test() {
-        val type = CategoryType.BUSINESS
+        val type = com.chpl.msnews.data.model.CategoryType.BUSINESS
 
         println("type = ${type.label}")
     }
