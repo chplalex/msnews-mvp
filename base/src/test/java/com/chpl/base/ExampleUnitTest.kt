@@ -19,7 +19,7 @@ class ExampleUnitTest {
 
     @Test
     fun test() {
-        val type = com.chpl.msnews.data.model.CategoryType.BUSINESS
+        val type = CategoryType.BUSINESS
 
         println("type = ${type.label}")
     }

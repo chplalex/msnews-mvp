@@ -4,13 +4,15 @@ import com.chpl.msnews.data.database.FavoritesEntity
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
-internal interface FavoritesRepository {
+interface FavoritesRepository {
 
-    fun getFavoriteList(account: String): Single<List<com.chpl.msnews.data.database.FavoritesEntity>>
+    fun getFavoriteList(account: String): Single<List<FavoritesEntity>>
 
-    fun getFavoriteItem(account: String, articleId: Int): Single<com.chpl.msnews.data.database.FavoritesEntity>
+    fun getFavoriteItem(account: String, articleId: Int): Single<FavoritesEntity>
 
-    fun insertFavoriteItem(favorite: com.chpl.msnews.data.database.FavoritesEntity): Completable
+    fun getFavoriteItems(account: String, articleId: Int): Single<List<FavoritesEntity>>
 
-    fun deleteFavoriteItem(account: String, articleId: Int): Completable
+    fun insertFavoriteItem(favorite: FavoritesEntity): Single<FavoriteState>
+
+    fun deleteFavoriteItem(account: String, articleId: Int): Single<FavoriteState>
 }

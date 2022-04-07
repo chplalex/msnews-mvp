@@ -1,6 +1,10 @@
 package com.chpl.msnews.domain.mapper
 
+import com.chpl.msnews.data.api.ArticleRaw
+import com.chpl.msnews.data.api.ErrorRaw
+import com.chpl.msnews.data.database.FavoritesEntity
 import com.chpl.msnews.domain.model.Article
+import com.chpl.msnews.domain.model.ArticleModel
 import com.chpl.msnews.domain.source.favorites.FavoriteState
 import com.chpl.msnews.ui.news.item.NewsItemUiModel
 import timber.log.Timber
@@ -12,8 +16,8 @@ import javax.inject.Inject
 class NewsMapper
 @Inject constructor() {
 
-    internal fun mapToArticleFromApi(articleRaw: com.chpl.msnews.data.api.ArticleRaw): Article {
-        return Article(
+    internal fun mapToArticleModelFromApi(articleRaw: ArticleRaw): ArticleModel {
+        val article = Article(
             author = articleRaw.author ?: "",
             title = articleRaw.title,
             description = articleRaw.description,
@@ -25,53 +29,62 @@ class NewsMapper
             country = articleRaw.country,
             publishedAt = mapDate(articleRaw.publishedAt)
         )
+        val articleId = article.hashCode()
+        return ArticleModel(
+            article = article,
+            articleId = articleId
+        )
     }
 
-    internal fun mapToArticleFromDb(favoriteEntity: com.chpl.msnews.data.database.FavoritesEntity): Article {
-        return Article(
-            author = favoriteEntity.author,
+    internal fun mapToArticleModelFromDb(favoriteEntity: FavoritesEntity): ArticleModel {
+        val article = Article(
+            author = favoriteEntity.author ?: "",
             title = favoriteEntity.title,
             description = favoriteEntity.description,
             articleUrl = favoriteEntity.articleUrl,
             source = favoriteEntity.source,
-            imageUrl = favoriteEntity.imageUrl,
+            imageUrl = favoriteEntity.imageUrl ?: "",
             category = favoriteEntity.category,
             language = favoriteEntity.language,
             country = favoriteEntity.country,
             publishedAt = favoriteEntity.publishedAt
         )
+        return ArticleModel(
+            article = article,
+            articleId = favoriteEntity.id
+        )
     }
 
-    internal fun mapToDb(article: Article, account: String): com.chpl.msnews.data.database.FavoritesEntity {
-        return com.chpl.msnews.data.database.FavoritesEntity(
-            articleId = article.hashCode(),
+    internal fun mapToDb(account: String, articleModel: ArticleModel): FavoritesEntity {
+        return FavoritesEntity(
+            id = articleModel.articleId,
             userAccount = account,
-            author = article.author,
-            title = article.title,
-            description = article.description,
-            articleUrl = article.articleUrl,
-            source = article.source,
-            imageUrl = article.imageUrl,
-            category = article.category,
-            language = article.language,
-            country = article.country,
-            publishedAt = article.publishedAt,
+            author = articleModel.article.author,
+            title = articleModel.article.title,
+            description = articleModel.article.description,
+            articleUrl = articleModel.article.articleUrl,
+            source = articleModel.article.source,
+            imageUrl = articleModel.article.imageUrl,
+            category = articleModel.article.category,
+            language = articleModel.article.language,
+            country = articleModel.article.country,
+            publishedAt = articleModel.article.publishedAt,
         )
 
     }
 
     internal fun mapToNewsItemUiModel(
-        article: Article,
+        articleModel: ArticleModel,
         favoriteState: FavoriteState,
         onFavoriteAction: ((Int) -> Unit),
         onItemAction: ((String) -> Unit)
     ) = NewsItemUiModel(
-        id = article.hashCode(),
-        title = article.title,
-        author = article.author,
-        description = article.description,
-        imageUrl = article.imageUrl,
-        articleUrl = article.articleUrl,
+        id = articleModel.articleId,
+        title = articleModel.article.title,
+        author = articleModel.article.author,
+        description = articleModel.article.description,
+        imageUrl = articleModel.article.imageUrl,
+        articleUrl = articleModel.article.articleUrl,
         onFavoriteAction = onFavoriteAction,
         onItemAction = onItemAction
     ).apply {
@@ -87,7 +100,7 @@ class NewsMapper
         }
     }
 
-    internal fun mapNewsError(error: com.chpl.msnews.data.api.ErrorRaw): String {
+    internal fun mapNewsError(error: ErrorRaw): String {
         return "code = ${error.code}\nmessage = ${error.message}\ncontext = ${error.context}"
     }
 }

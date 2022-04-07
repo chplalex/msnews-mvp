@@ -5,5 +5,5 @@ import io.reactivex.rxjava3.core.Single
 
 internal interface NewsRepository {
 
-    fun getNews(keywords: String?, categories: String?, countries: String?): Single<com.chpl.msnews.data.api.GetNewsResponse>
+    fun getNews(keywords: String?, categories: String?, countries: String?): Single<GetNewsResponse>
 }

@@ -6,8 +6,13 @@ import com.chpl.msnews.data.model.CountryType
 import com.chpl.msnews.data.model.LanguageType
 import com.google.gson.Gson
 import java.util.Date
+import javax.inject.Inject
 
 class Converters {
+
+    @Inject
+    lateinit var gson: Gson
+
     @TypeConverter
     fun mapLongToDate(value: Long?): Date? {
         return value?.let { Date(it) }
@@ -22,7 +27,7 @@ class Converters {
     fun mapStringToCategory(value: String?): CategoryType? {
         return value?.let {
             try {
-                Gson().fromJson(value, CategoryType::class.java)
+                gson.fromJson(value, CategoryType::class.java)
             } catch(e: Exception) {
                 null
             }
@@ -38,7 +43,7 @@ class Converters {
     fun mapStringToCountry(value: String?): CountryType? {
         return value?.let {
             try {
-                Gson().fromJson(value, CountryType::class.java)
+                gson.fromJson(value, CountryType::class.java)
             } catch(e: Exception) {
                 null
             }
@@ -54,7 +59,7 @@ class Converters {
     fun mapStringToLanguage(value: String?): LanguageType? {
         return value?.let {
             try {
-                Gson().fromJson(value, LanguageType::class.java)
+                gson.fromJson(value, LanguageType::class.java)
             } catch(e: Exception) {
                 null
             }

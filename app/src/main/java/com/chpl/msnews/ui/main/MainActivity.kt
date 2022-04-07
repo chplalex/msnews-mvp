@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
-import com.chpl.msnews.App
 import com.chpl.msnews.R
 import com.chpl.msnews.di.main.DaggerMainComponent
 import com.chpl.msnews.ui.news.activity.NewsActivity
@@ -57,7 +56,6 @@ class MainActivity : MvpActivity(), MainView {
     private lateinit var signInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        (applicationContext as App).applicationComponent.inject(activity = this)
         DaggerMainComponent.factory().createComponent().inject(this)
 
         super.onCreate(savedInstanceState)

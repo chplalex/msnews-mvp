@@ -10,15 +10,13 @@ import java.util.Date
 
 @Entity(tableName = "favorites")
 data class FavoritesEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
     val id: Int = 0,
-    @ColumnInfo(name = "article_id")
-    val articleId: Int = 0,
     @ColumnInfo(name = "user_account")
     val userAccount: String = "",
     @ColumnInfo(name = "author")
-    val author: String = "",
+    val author: String? = null,
     @ColumnInfo(name = "title")
     val title: String = "",
     @ColumnInfo(name = "description")
@@ -28,7 +26,7 @@ data class FavoritesEntity(
     @ColumnInfo(name = "source")
     val source: String = "",
     @ColumnInfo(name = "image_url")
-    val imageUrl: String = "",
+    val imageUrl: String? = null,
     @ColumnInfo(name = "category")
     val category: CategoryType? = null,
     @ColumnInfo(name = "language")

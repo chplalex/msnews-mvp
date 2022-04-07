@@ -1,9 +1,9 @@
 package com.chpl.msnews.domain.source.news
 
-import com.chpl.msnews.domain.model.Article
+import com.chpl.msnews.domain.model.ArticleModel
 import io.reactivex.rxjava3.core.Single
 
 interface NewsUseCase {
 
-    fun getNews(keywords: String?, categories: String?, countries: String?): Single<List<com.chpl.msnews.domain.model.Article>>
+    fun getNews(keywords: String?, categories: String?, countries: String?): Single<List<ArticleModel>>
 }

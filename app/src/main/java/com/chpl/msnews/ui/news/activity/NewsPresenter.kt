@@ -1,8 +1,12 @@
 package com.chpl.msnews.ui.news.activity
 
+import com.chpl.msnews.domain.mapper.NewsMapper
+import com.chpl.msnews.domain.model.ArticleModel
+import com.chpl.msnews.domain.source.favorites.FavoriteState
+import com.chpl.msnews.domain.source.favorites.FavoritesUseCase
+import com.chpl.msnews.domain.source.news.NewsUseCase
 import com.chpl.msnews.ui.news.item.NewsItemUiModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import moxy.InjectViewState
@@ -13,9 +17,9 @@ import javax.inject.Inject
 @InjectViewState
 class NewsPresenter
 @Inject constructor(
-    private val favoritesUseCase: com.chpl.msnews.domain.source.favorites.FavoritesUseCase,
-    private val newsUseCase: com.chpl.msnews.domain.source.news.NewsUseCase,
-    private val newsMapper: com.chpl.msnews.domain.mapper.NewsMapper
+    private val favoritesUseCase: FavoritesUseCase,
+    private val newsUseCase: NewsUseCase,
+    private val newsMapper: NewsMapper
 ) : com.chpl.msnews.ui.base.BasePresenter<NewsView>() {
 
     private var keywords: String? = null
@@ -29,7 +33,7 @@ class NewsPresenter
     private val loadNewsSubject = PublishSubject.create<Unit>()
     private val switchFavoriteStateSubject = PublishSubject.create<Int>()
 
-    private var articles = emptyList<com.chpl.msnews.domain.model.Article>()
+    private var articleModels = mutableListOf<ArticleModel>()
     private var uiModels = mutableListOf<NewsItemUiModel>()
 
     private enum class ArticlesSourceType {
@@ -57,13 +61,14 @@ class NewsPresenter
         unsubscribeOnDestroy(
             checkFavoriteStateSubject
                 .switchMapSingle { position ->
-                    favoritesUseCase.getFavoriteState(account, articles[position])
+                    favoritesUseCase.getFavoriteState(account, articleModels[position])
                         .map { state -> position to state }
                 }
                 .filter {
                     val position = it.first
                     val state = it.second
-                    uiModels[position].favoriteState != state
+                    val filter = uiModels[position].favoriteState != state
+                    filter
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -87,12 +92,13 @@ class NewsPresenter
                 }
                 .observeOn(Schedulers.io())
                 .switchMapSingle { itemId ->
-                    val article = articles.find { it.hashCode() == itemId }
-                        ?: throw IllegalArgumentException("Item with hashCode == $itemId not found")
-                    val position = articles.indexOf(article)
-                    val newState = uiModels[position].favoriteState.switch()
-                    favoritesUseCase.switchFavoriteState(account, article)
-                        .andThen(Single.just(position to newState))
+                    val articleModel = articleModels.find { it.articleId == itemId }
+                        ?: throw IllegalArgumentException("Item with id == $itemId not found")
+                    favoritesUseCase.switchFavoriteState(account, articleModel)
+                        .map { state ->
+                            val position = articleModels.indexOf(articleModel)
+                            position to state
+                        }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ pair ->
@@ -107,7 +113,7 @@ class NewsPresenter
         )
     }
 
-    private fun handleFavoriteState(position: Int, newState: com.chpl.msnews.domain.source.favorites.FavoriteState) {
+    private fun handleFavoriteState(position: Int, newState: FavoriteState) {
         when (articlesSource) {
             ArticlesSourceType.NEWS -> {
                 uiModels[position].favoriteState = newState
@@ -115,6 +121,7 @@ class NewsPresenter
             }
             ArticlesSourceType.FAVORITES -> {
                 uiModels.removeAt(position)
+                articleModels.removeAt(position)
                 viewState.removeNewsItem(position)
             }
         }
@@ -131,18 +138,19 @@ class NewsPresenter
                 .observeOn(Schedulers.io())
                 .switchMapSingle {
                     newsUseCase.getNews(keywords = keywords, categories = categories, countries = countries)
-                        .map { articles ->
-                            this.articlesSource = ArticlesSourceType.NEWS
-                            this.articles = articles
+                        .map {
+                            articlesSource = ArticlesSourceType.NEWS
+                            articleModels.clear()
+                            articleModels.addAll(it)
                             val state = when (articlesSource) {
-                                ArticlesSourceType.NEWS -> com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_OFF
-                                ArticlesSourceType.FAVORITES -> com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_ON
+                                ArticlesSourceType.NEWS -> FavoriteState.ENABLED_AND_OFF
+                                ArticlesSourceType.FAVORITES -> FavoriteState.ENABLED_AND_ON
                             }
-                            articles.map { article ->
+                            articleModels.map { articleModel ->
                                 newsMapper.mapToNewsItemUiModel(
-                                    article = article,
+                                    articleModel = articleModel,
                                     favoriteState = state,
-                                    onFavoriteAction = { switchFavoriteState(article.hashCode()) },
+                                    onFavoriteAction = { switchFavoriteState(articleModel.articleId) },
                                     onItemAction = { url -> viewState.openExternalBrowser(url) }
                                 )
                             }
@@ -183,14 +191,15 @@ class NewsPresenter
                 }
                 .observeOn(Schedulers.io())
                 .switchMapSingle {
-                    favoritesUseCase.getFavorites(account).map { articles ->
-                        this.articlesSource = ArticlesSourceType.FAVORITES
-                        this.articles = articles
-                        articles.map { article ->
+                    favoritesUseCase.getFavorites(account).map {
+                        articlesSource = ArticlesSourceType.FAVORITES
+                        articleModels.clear()
+                        articleModels.addAll(it)
+                        articleModels.map { articleModel ->
                             newsMapper.mapToNewsItemUiModel(
-                                article = article,
-                                favoriteState = com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_ON,
-                                onFavoriteAction = { switchFavoriteState(article.hashCode()) },
+                                articleModel = articleModel,
+                                favoriteState = FavoriteState.ENABLED_AND_ON,
+                                onFavoriteAction = { switchFavoriteState(articleModel.articleId) },
                                 onItemAction = { url -> viewState.openExternalBrowser(url) }
                             )
                         }
@@ -226,10 +235,4 @@ class NewsPresenter
     private fun switchFavoriteState(itemId: Int) = switchFavoriteStateSubject.onNext(itemId)
 
     private fun checkFavoriteState(index: Int) = checkFavoriteStateSubject.onNext(index)
-}
-
-private fun com.chpl.msnews.domain.source.favorites.FavoriteState.switch(): com.chpl.msnews.domain.source.favorites.FavoriteState = if (this == com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_ON) {
-    com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_OFF
-} else {
-    com.chpl.msnews.domain.source.favorites.FavoriteState.ENABLED_AND_ON
 }
